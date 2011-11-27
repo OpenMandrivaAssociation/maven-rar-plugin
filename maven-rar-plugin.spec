@@ -1,6 +1,6 @@
 Name:           maven-rar-plugin
 Version:        2.2
-Release:        4
+Release:        6
 Summary:        Plugin to create Resource Adapter Archive which can be deployed to a J2EE server
 
 Group:          Development/Java
