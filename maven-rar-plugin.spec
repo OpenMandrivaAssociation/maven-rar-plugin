@@ -1,7 +1,7 @@
 Name:           maven-rar-plugin
 Version:        2.2
-Release:        6
-Summary:        Plugin to create Resource Adapter Archive which can be deployed to a J2EE server
+Release:        7
+Summary:        Plugin to create Resource Adapter Archive to be deployed to a J2EE server
 
 Group:          Development/Java
 License:        ASL 2.0
@@ -9,25 +9,25 @@ URL:            http://maven.apache.org/plugins/maven-rar-plugin/
 # svn export http://svn.apache.org/repos/asf/maven/plugins/tags/maven-rar-plugin-2.2/
 # tar jcf maven-rar-plugin-2.2.tar.bz2 maven-rar-plugin-2.2/
 Source0:        %{name}-%{version}.tar.bz2
-BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+Patch0:         add-maven-core.patch
 
 BuildArch: noarch
 
-BuildRequires: java-devel >= 0:1.6.0
+BuildRequires: java-devel >= 1.6.0
 BuildRequires: plexus-utils
-BuildRequires: ant-nodeps
-BuildRequires: maven2
+BuildRequires: ant
+BuildRequires: maven
 BuildRequires: maven-install-plugin
 BuildRequires: maven-compiler-plugin
 BuildRequires: maven-plugin-plugin
 BuildRequires: maven-resources-plugin
-BuildRequires: maven-surefire-maven-plugin
+BuildRequires: maven-surefire-plugin
 BuildRequires: maven-surefire-provider-junit
 BuildRequires: maven-jar-plugin
 BuildRequires: maven-javadoc-plugin
 BuildRequires: jpackage-utils
-Requires: ant-nodeps
-Requires: maven2
+Requires: ant
+Requires: maven
 Requires: jpackage-utils
 Requires: java
 Requires(post): jpackage-utils
@@ -54,28 +54,18 @@ API documentation for %{name}.
 
 
 %prep
-%setup -q #You may need to update this according to your Source0
+%setup -q 
+%patch0
 
 %build
-export MAVEN_REPO_LOCAL=$(pwd)/.m2/repository
-
-#FIXME: mvn-jpp doesn't build jar "maven-rar-plugin-2.2/target/unit/basic-rar-test/target/test-rar.rar", why?
-mvn-jpp \
-        -e \
+mvn-rpmbuild \
         -Dmaven.test.failure.ignore=true \
-        -Dmaven2.jpp.mode=true \
-        -Dmaven.repo.local=$MAVEN_REPO_LOCAL \
         install javadoc:javadoc
 
 %install
-rm -rf %{buildroot}
-
 # jars
 install -d -m 0755 %{buildroot}%{_javadir}
-install -m 644 target/%{name}-%{version}.jar   %{buildroot}%{_javadir}/%{name}-%{version}.jar
-
-(cd %{buildroot}%{_javadir} && for jar in *-%{version}*; \
-    do ln -sf ${jar} `echo $jar| sed "s|-%{version}||g"`; done)
+install -m 644 target/%{name}-%{version}.jar   %{buildroot}%{_javadir}/%{name}.jar
 
 %add_to_maven_depmap org.apache.maven.plugins %{name} %{version} JPP %{name}
 
@@ -85,10 +75,8 @@ install -pm 644 pom.xml \
     %{buildroot}%{_mavenpomdir}/JPP-%{name}.pom
 
 # javadoc
-install -d -m 0755 %{buildroot}%{_javadocdir}/%{name}-%{version}
-cp -pr target/site/api*/* %{buildroot}%{_javadocdir}/%{name}-%{version}/
-ln -s %{name}-%{version} %{buildroot}%{_javadocdir}/%{name}
-rm -rf target/site/api*
+install -d -m 0755 %{buildroot}%{_javadocdir}/%{name}
+cp -pr target/site/api*/* %{buildroot}%{_javadocdir}/%{name}/
 
 %post
 %update_maven_depmap
@@ -96,17 +84,11 @@ rm -rf target/site/api*
 %postun
 %update_maven_depmap
 
-%clean
-rm -rf %{buildroot}
-
 %files
-%defattr(-,root,root,-)
 %{_javadir}/*
 %{_mavenpomdir}/*
 %{_mavendepmapfragdir}/*
 
 %files javadoc
-%defattr(-,root,root,-)
-%{_javadocdir}/%{name}-%{version}
 %{_javadocdir}/%{name}
 
