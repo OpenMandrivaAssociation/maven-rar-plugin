@@ -1,0 +1,14 @@
+--- pom.xml.sav	2007-02-14 05:11:03.000000000 +0200
++++ pom.xml	2011-06-21 13:01:08.675267319 +0300
+@@ -55,6 +55,11 @@ under the License.
+     </dependency>
+     <dependency>
+       <groupId>org.apache.maven</groupId>
++      <artifactId>maven-core</artifactId>
++      <version>3.0.3</version>
++    </dependency>
++    <dependency>
++      <groupId>org.apache.maven</groupId>
+       <artifactId>maven-archiver</artifactId>
+       <version>2.2</version>
+     </dependency>
