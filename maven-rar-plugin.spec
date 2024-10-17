@@ -5,7 +5,7 @@ Summary:        Plugin to create Resource Adapter Archive to be deployed to a J2
 
 Group:          Development/Java
 License:        ASL 2.0
-URL:            http://maven.apache.org/plugins/maven-rar-plugin/
+URL:            https://maven.apache.org/plugins/maven-rar-plugin/
 # svn export http://svn.apache.org/repos/asf/maven/plugins/tags/maven-rar-plugin-2.2/
 # tar jcf maven-rar-plugin-2.2.tar.bz2 maven-rar-plugin-2.2/
 Source0:        %{name}-%{version}.tar.bz2
